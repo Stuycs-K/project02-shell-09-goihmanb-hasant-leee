@@ -4,7 +4,7 @@
 #include <unistd.h>
 #include <string.h>
 
-int main(){
+int main(int argc, char *argv[]){
     printf("hello world\n");
     return 0;
 }
