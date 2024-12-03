@@ -1,13 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/wait.h>
+#include <fcntl.h>
 #include <unistd.h>
 #include <string.h>
+#include <sys/stat.h>
+#include <errno.h>
+#include <time.h>
+#include <sys/types.h>
+#include <dirent.h>
 
-int main(int argc, char *argv[]){
-    printf("hello world\n");
-    return 0;
-}
+
 
 
 void parse_args(char* line, char ** arg_ary){
@@ -17,16 +19,19 @@ void parse_args(char* line, char ** arg_ary){
 }
 
 
-void redirectOut(){
-  int fd1 = open("foo.txt", O_WRONLY);
-  int FILENO = stdout;
-  int backup_stdout = dup( FILENO ) // save stdout for later
-  dup2(fd1, FILENO);
-  printf("TO THE FILE!!!\n");
-  fflush(stdout);//not needed when a child process exits, becaue exiting a process will flush automatically.
-  dup2(backup_stdout, FILENO)
+void redirect_in(char * fileName, char * input){
+  //changing the input to be a file instead of stdin
+  int w_file = open(fileName,
+      O_WRONLY | O_APPEND | O_CREAT, 0611);
+  if(w_file==-1)err();
+  printf("w_file: %u\n",w_file);
+  int n = strlen(input)/4;
+  write( w_file, input, n);
 }
 
-void redirectIn(){
 
+int main(int argc, char *argv[]){
+    printf("hello world\n");
+    redirect_in("tempIn.txt", "myinput");
+    return 0;
 }
