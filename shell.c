@@ -4,8 +4,25 @@
 #include <unistd.h>
 #include <string.h>
 
-int main(int argc, char *argv[]){
-    printf("hello world\n");
+int main(int argc, char *argv[]) {
+    char cmds[argc/2][1000];
+    int j = 0;
+    cmds[0][0] = 0;
+    char line_buff[1000];
+    printf("enter command: ");
+    fgets(line_buff, sizeof(line_buff), stdin);
+    char *curr = line_buff;
+    char * token;
+    token = strsep( &curr, ";" );
+    int i = 0;
+    while(token){
+        strcpy(cmds[i],token);
+        token = strsep( &curr, ";" );
+        i++;
+    }
+        printf("%s\n",cmds[0]);
+        printf("%s\n",cmds[1]);
+
     return 0;
 }
 
