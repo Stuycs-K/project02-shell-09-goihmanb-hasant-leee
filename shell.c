@@ -32,7 +32,10 @@ void get_cmds(char** cmds){
 int main(int argc, char *argv[]) {
     char **cmds = (char **) malloc(sizeof(char*)*1000);
     get_cmds(cmds);
-    printf("%s\n",cmds[0]);
-    printf("%s",cmds[1]);
+    int i = 0;
+    while (cmds[i]){
+        printf("%s\n",cmds[i]);
+        i++;
+    }
     return 0;
 }
