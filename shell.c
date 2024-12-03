@@ -15,3 +15,18 @@ void parse_args(char* line, char ** arg_ary){
     int i = 0;
     while((arg_ary[i] = strsep( &line, " " ))){ i++;}
 }
+
+
+void redirectOut(){
+  int fd1 = open("foo.txt", O_WRONLY);
+  int FILENO = stdout;
+  int backup_stdout = dup( FILENO ) // save stdout for later
+  dup2(fd1, FILENO);
+  printf("TO THE FILE!!!\n");
+  fflush(stdout);//not needed when a child process exits, becaue exiting a process will flush automatically.
+  dup2(backup_stdout, FILENO)
+}
+
+void redirectIn(){
+
+}
