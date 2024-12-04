@@ -19,14 +19,15 @@ void parse_args(char* line, char ** arg_ary){
 }
 
 
-void redirect_in(char * fileName, char * input){
+void redirect_in(char * fileName){
   //changing the input to be a file instead of stdin
-  int w_file = open(fileName,
-      O_WRONLY | O_APPEND | O_CREAT, 0611);
-  if(w_file==-1)err();
-  printf("w_file: %u\n",w_file);
-  int n = strlen(input)/4;
-  write( w_file, input, n);
+  int fd1 = open("foo.txt", O_WRONLY);
+  int FILENO = stdin;
+  int backup_stdout = dup( FILENO ) // save stdin for later
+  dup2(fd1, FILENO);
+  fflush(stdout);
+  dup2(backup_stdout, FILENO);
+
 }
 
 
