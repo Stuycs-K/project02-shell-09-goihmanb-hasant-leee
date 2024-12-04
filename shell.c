@@ -3,6 +3,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #include <string.h>
+#include <fcntl.h>
 
 
 
@@ -14,12 +15,18 @@ void parse_args(char* line, char ** arg_ary){
 
 void redirect_output(char * fileName, char * output) {
   //going from file into standard output?
-  int fd1 = open(fileName, O_WRONLY); //opens a file for storing output
+  int fd1 = open(fileName, O_WRONLY | O_APPEND | O_CREAT, 0611); //opens a file for storing output
   // if file doesn't exist, make one? Or maybe that should be in main
   int FILENO = stdout; //stores standard output
   int backup_stdout = dup(FILENO); //also stores standard output
-  dup2(fd1, FILENO); //redirects the file content to standard output
-  //write(fd1, &FILENO, sizeof(int));
+  dup2(FILENO, fd1); //redirects the standard output to file
+}
+void redirect_output2(char * fileName, char * output) {
+    int fd2 = open(fileName, O_WRONLY | O_APPEND | O_CREAT, 0611); //opens a file for storing output
+  // if file doesn't exist, make one? Or maybe that should be in main
+  int FILENO = stdout; //stores standard output
+  int backup_stdout = dup(FILENO); //also stores standard output
+  dup2(fd2, FILENO); //redirects the file to standard output
 }
 void get_cmds(char** cmds){
     //Parses all commands in-memory broken by semicolon using strsep
