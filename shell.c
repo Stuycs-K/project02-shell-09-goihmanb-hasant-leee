@@ -32,12 +32,13 @@ void get_cmds(char** cmds){
     char * token;
     token = strsep( &curr, ";" );
     int i = 0;
-    while(token){
-        cmds[i] = malloc(strlen(token) + 1);
-        strcpy(cmds[i],token);
-        token = strsep( &curr, ";" );
-        i++;
-    }
+    // while(token){
+    //     cmds[i] = malloc(strlen(token) + 1);
+    //     strcpy(cmds[i],token);
+    //     token = strsep( &curr, ";" );
+    //     i++;
+    // }
+    printf(line_buff);
 }
 
 void execute_cmds(char** cmds){

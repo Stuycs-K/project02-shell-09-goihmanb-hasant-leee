@@ -1,6 +1,0 @@
-foo.txt
-makefile
-README.md
-shell
-shell.c
-shell.o
