@@ -5,3 +5,4 @@ shell.o: shell.c
 clean:
 	@rm -f *.o
 	@rm -f shell
+	@rm -f *.txt
