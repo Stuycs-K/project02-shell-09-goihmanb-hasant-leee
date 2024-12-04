@@ -54,7 +54,8 @@ void execute_cmds(char** cmds){
         else{
         int pid = fork();
         if (pid == 0){
-            redirect_output("foo.txt");
+            // redirect_output("foo.txt");
+            printf("%d",check_for_arr(cmds[i]));
             execvp(arg_ary[0], arg_ary);
         }
         else{
@@ -68,14 +69,22 @@ void execute_cmds(char** cmds){
 void redirect_in(char * fileName){
   //changing the input to be a file instead of stdin
   int fd1 = open("foo.txt", O_WRONLY);
-  int FILENO = stdin;
-  int backup_stdout = dup( FILENO ) // save stdin for later
+  int FILENO = 0;
+  int backup_stdout = dup( FILENO ); // save stdin for later
   dup2(fd1, FILENO);
   fflush(stdout);
   dup2(backup_stdout, FILENO);
 
 }
-
+int check_for_arr(char *arg_ary[1000]){
+    int i = 0;
+    while (arg_ary[i]){
+        if (strcmp(">",arg_ary[i])==0){
+            return i;
+        }
+    }
+    return -1;
+}
 int main(int argc, char *argv[]) {
     char **cmds = (char **) malloc(sizeof(char*)*1000);
     get_cmds(cmds);
