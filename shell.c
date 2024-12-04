@@ -31,17 +31,8 @@ void get_cmds(char** cmds){
     }
 }
 
-int main(int argc, char *argv[]) {
-    char **cmds = (char **) malloc(sizeof(char*)*1000);
-    get_cmds(cmds);
-    // int i = 0;
-    // while (cmds[i]){
-    //     printf("%s\n",cmds[i]);
-    //     i++;
-    // }
-    char *home = getenv("HOME");
-    // printf("Home: %s\n", home);
-    chdir(home);
+void execute_cmds(char** cmds){
+    //Executes all commands in cmds array
     int i = 0;
     while (cmds[i]){
         char *arg_ary[1000];
@@ -63,6 +54,13 @@ int main(int argc, char *argv[]) {
         i++;
     }
     }
+}
 
+int main(int argc, char *argv[]) {
+    char **cmds = (char **) malloc(sizeof(char*)*1000);
+    get_cmds(cmds);
+    char *home = getenv("HOME");
+    chdir(home);
+    execute_cmds(cmds);
     return 0;
 }
