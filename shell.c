@@ -14,6 +14,7 @@ void parse_args(char* line, char ** arg_ary){
 }
 
 void get_cmds(char** cmds){
+    //Parses all commands in-memory broken by semicolon using strsep
     char line_buff[1000];
     printf("enter command: ");
     fgets(line_buff, sizeof(line_buff), stdin);
@@ -33,24 +34,34 @@ void get_cmds(char** cmds){
 int main(int argc, char *argv[]) {
     char **cmds = (char **) malloc(sizeof(char*)*1000);
     get_cmds(cmds);
+    // int i = 0;
+    // while (cmds[i]){
+    //     printf("%s\n",cmds[i]);
+    //     i++;
+    // }
+    char *home = getenv("HOME");
+    // printf("Home: %s\n", home);
+    chdir(home);
     int i = 0;
     while (cmds[i]){
-        printf("%s\n",cmds[i]);
+        char *arg_ary[1000];
+        parse_args(cmds[i], arg_ary);
+        if (strcmp(arg_ary[0], "cd") == 0){
+            chdir(arg_ary[1]);
+            i++;
+            printf("Changed directory to %s\n", arg_ary[1]);
+        }
+        else{
+        int pid = fork();
+        if (pid == 0){
+            execvp(arg_ary[0], arg_ary);
+        }
+        else{
+            wait(NULL);
+            printf("Executed command %s\n", cmds[i]);
+        }
         i++;
     }
-    char *home = getenv("HOME");
-    printf("Home: %s\n", home);
-    chdir(home);
-    char *arg_ary[1000];
-    parse_args(cmds[0], arg_ary);
-    printf("arg_ary[0]: %s\n", arg_ary[0]);
-    printf("arg_ary[1]: %s\n", arg_ary[1]);
-    int pid = fork();
-    if (pid == 0){
-        execvp(arg_ary[0], arg_ary);
-    }
-    else{
-        wait(NULL);
     }
 
     return 0;
