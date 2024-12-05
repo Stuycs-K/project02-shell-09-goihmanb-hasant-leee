@@ -15,12 +15,11 @@ void parse_args(char* line, char ** arg_ary){
 
 void redirect_output(char * fileName) {
   //going from file into standard output?
-  int fd1 = open(fileName, O_WRONLY | O_APPEND | O_CREAT, 0611); //opens a file for storing output
+  int fd1 = open(fileName, O_WRONLY | O_TRUNC | O_CREAT, 0611); //opens a file for storing output
   // if file doesn't exist, make one? Or maybe that should be in main
   int FILENO = 1; //stores standard output
   int backup_stdout = dup(FILENO); //also stores standard output
   dup2(fd1, FILENO); //redirects the standard output to file
-  printf("Print");
 }
 void get_cmds(char** cmds){
     //Parses all commands in-memory broken by semicolon using strsep
@@ -39,7 +38,16 @@ void get_cmds(char** cmds){
         i++;
     }
 }
-
+int check_for_arr(char* arg_ary[]){
+    int i = 0;
+    while (arg_ary[i]){
+        if (strcmp(">",arg_ary[i])==0){
+            return i;
+        }
+        i++;
+    }
+    return -1;
+}
 void execute_cmds(char** cmds){
     //Executes all commands in cmds array
     int i = 0;
@@ -48,18 +56,28 @@ void execute_cmds(char** cmds){
         parse_args(cmds[i], arg_ary);
         if (strcmp(arg_ary[0], "cd") == 0){
             chdir(arg_ary[1]);
-            i++;
+            i++;  printf("Print");
+
             printf("Changed directory to %s\n", arg_ary[1]);
         }
         else{
         int pid = fork();
         if (pid == 0){
             // redirect_output("foo.txt");
-            printf("%d",check_for_arr(cmds[i]));
-            execvp(arg_ary[0], arg_ary);
+            int idx = check_for_arr(arg_ary);
+            if(idx!=-1){
+                redirect_output(arg_ary[idx+1]);
+                char *out_ary[1000];
+                for (int i = 0; i < idx;i++){
+                    out_ary[i]=arg_ary[i];
+                }
+                execvp(out_ary[0], out_ary);
+            }
+            execvp(arg_ary[0],arg_ary);
         }
         else{
             wait(NULL);
+
             printf("Executed command %s\n", cmds[i]);
         }
         i++;
@@ -76,20 +94,12 @@ void redirect_in(char * fileName){
   dup2(backup_stdout, FILENO);
 
 }
-int check_for_arr(char *arg_ary[1000]){
-    int i = 0;
-    while (arg_ary[i]){
-        if (strcmp(">",arg_ary[i])==0){
-            return i;
-        }
-    }
-    return -1;
-}
+
 int main(int argc, char *argv[]) {
     char **cmds = (char **) malloc(sizeof(char*)*1000);
     get_cmds(cmds);
-    char *home = getenv("HOME");
-    chdir(home);
+    // char *home = getenv("HOME");
+    // chdir(home);
     execute_cmds(cmds);
     return 0;
 }
