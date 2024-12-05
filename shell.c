@@ -48,6 +48,17 @@ int check_for_arr(char* arg_ary[]){
     }
     return -1;
 }
+
+int check_for_pipe(char* arg_ary[]){
+    int i = 0;
+    while (arg_ary[i]){
+        if (strcmp("|",arg_ary[i])==0){
+            return i;
+        }
+        i++;
+    }
+    return -1;
+}
 void execute_cmds(char** cmds){
     //Executes all commands in cmds array
     int i = 0;
@@ -65,6 +76,15 @@ void execute_cmds(char** cmds){
         if (pid == 0){
             // redirect_output("foo.txt");
             int idx = check_for_arr(arg_ary);
+            int pidx = check_for_pipe(arg_ary);
+            if(pidx!=-1){
+                redirect_output("doodoo.dat");
+                char *out_ary[1000];
+                for (int i = 0; i < pidx;i++){
+                    out_ary[i]=arg_ary[i];
+                }
+                execvp(out_ary[0], out_ary);
+            }
             if(idx!=-1){
                 redirect_output(arg_ary[idx+1]);
                 char *out_ary[1000];
@@ -77,7 +97,11 @@ void execute_cmds(char** cmds){
         }
         else{
             wait(NULL);
-
+                int pid = fork();
+                if (pid == 0){
+                redirect_output("foo.txt"); 
+                execvp(arg_ary[0],arg_ary);
+             }
             printf("Executed command %s\n", cmds[i]);
         }
         i++;
@@ -86,7 +110,7 @@ void execute_cmds(char** cmds){
 }
 void redirect_in(char * fileName){
   //changing the input to be a file instead of stdin
-  int fd1 = open("foo.txt", O_WRONLY);
+  int fd1 = open(fileName, O_WRONLY);
   int FILENO = 0;
   int backup_stdout = dup( FILENO ); // save stdin for later
   dup2(fd1, FILENO);
