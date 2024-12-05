@@ -20,25 +20,27 @@ void redirect_output(char * fileName) {
   int FILENO = 1; //stores standard output
   int backup_stdout = dup(FILENO); //also stores standard output
   dup2(fd1, FILENO); //redirects the standard output to file
-  printf("Print");
+  //printf("Print");
 }
 void get_cmds(char** cmds){
     //Parses all commands in-memory broken by semicolon using strsep
     char line_buff[1000];
-    printf("enter command: ");
-    fgets(line_buff, sizeof(line_buff), stdin);
+    printf("$ ");
+    if (fgets(line_buff, sizeof(line_buff), stdin) == NULL) {
+      exit(1);
+    }
     line_buff[strcspn(line_buff, "\n")] = 0; //Removes newline breaks code
     char *curr = line_buff;
     char * token;
     token = strsep( &curr, ";" );
     int i = 0;
-    // while(token){
-    //     cmds[i] = malloc(strlen(token) + 1);
-    //     strcpy(cmds[i],token);
-    //     token = strsep( &curr, ";" );
-    //     i++;
-    // }
-    printf(line_buff);
+    while(token){
+        cmds[i] = malloc(strlen(token) + 1);
+        strcpy(cmds[i],token);
+        token = strsep( &curr, ";" );
+        i++;
+    }
+    //printf(line_buff);
 }
 
 void execute_cmds(char** cmds){
@@ -53,24 +55,28 @@ void execute_cmds(char** cmds){
             printf("Changed directory to %s\n", arg_ary[1]);
         }
         else{
-        int pid = fork();
-        if (pid == 0){
-            redirect_output("foo.txt");
-            execvp(arg_ary[0], arg_ary);
-        }
-        else{
-            wait(NULL);
-            printf("Executed command %s\n", cmds[i]);
-        }
-        i++;
-    }
+          int pid = fork();
+          if (pid == 0){
+              redirect_output("foo.txt");
+              execvp(arg_ary[0], arg_ary);
+          }
+          else{
+              wait(NULL);
+              printf("Executed command %s\n", cmds[i]);
+              char cwd[1000];
+              if (getcwd(cwd, sizeof(cwd)) != NULL) {
+                  printf("%s", cwd);
+                }
+          }
+          i++;
+      }
     }
 }
 void redirect_in(char * fileName){
   //changing the input to be a file instead of stdin
   int fd1 = open("foo.txt", O_WRONLY);
   int FILENO = stdin;
-  int backup_stdout = dup( FILENO ) // save stdin for later
+  int backup_stdout = dup( FILENO ); // save stdin for later
   dup2(fd1, FILENO);
   fflush(stdout);
   dup2(backup_stdout, FILENO);
@@ -79,9 +85,12 @@ void redirect_in(char * fileName){
 
 int main(int argc, char *argv[]) {
     char **cmds = (char **) malloc(sizeof(char*)*1000);
-    get_cmds(cmds);
-    char *home = getenv("HOME");
-    chdir(home);
-    execute_cmds(cmds);
+    while (1) {
+      get_cmds(cmds);
+      // char *home = getenv("HOME");
+      // chdir(home);
+      execute_cmds(cmds);
+    }
+
     return 0;
 }
