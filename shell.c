@@ -97,11 +97,11 @@ void execute_cmds(char** cmds){
         }
         else{
             wait(NULL);
-                int pid = fork();
-                if (pid == 0){
-                redirect_output("foo.txt"); 
-                execvp(arg_ary[0],arg_ary);
-             }
+            //     int pid = fork();
+            //     if (pid == 0){
+            //     redirect_output("foo.txt"); 
+            //     execvp(arg_ary[0],arg_ary);
+            //  }
             printf("Executed command %s\n", cmds[i]);
         }
         i++;

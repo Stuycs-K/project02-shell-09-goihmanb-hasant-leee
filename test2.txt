@@ -1,0 +1,7 @@
+makefile
+README.md
+shell
+shell.c
+shell.o
+test2.txt
+test.xt
