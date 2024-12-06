@@ -4,7 +4,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <fcntl.h>
-#include <errno.h>
+
 
 
 void parse_args(char* line, char ** arg_ary){
@@ -13,7 +13,7 @@ void parse_args(char* line, char ** arg_ary){
     while((arg_ary[i] = strsep( &line, " " ))){ i++;}
 }
 
-void redirect_output(char * fileName) { //I need to make it so that it creates a file in the project directory
+void redirect_output(char * fileName) {
   //going from file into standard output?
   int fd1 = open(fileName, O_WRONLY | O_TRUNC | O_CREAT, 0611); //opens a file for storing output
   // if file doesn't exist, make one? Or maybe that should be in main
@@ -22,14 +22,10 @@ void redirect_output(char * fileName) { //I need to make it so that it creates a
   dup2(fd1, FILENO); //redirects the standard output to file
   //printf("Print");
 }
-
 void get_cmds(char** cmds){
     //Parses all commands in-memory broken by semicolon using strsep
     char line_buff[1000];
-    char cwd[1000];
-    if (getcwd(cwd, sizeof(cwd)) != NULL) {
-        printf("%s$", cwd);
-    }
+    printf("$ ");
     if (fgets(line_buff, sizeof(line_buff), stdin) == NULL) {
       exit(1);
     }
@@ -136,7 +132,7 @@ int main(int argc, char *argv[]) {
       get_cmds(cmds);
       // char *home = getenv("HOME");
       // chdir(home);
-      execute_cmds(cmds, path);
+      execute_cmds(cmds);
     }
 
     return 0;
