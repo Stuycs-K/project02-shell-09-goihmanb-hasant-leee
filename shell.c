@@ -15,7 +15,7 @@ void parse_args(char* line, char ** arg_ary){
 
 void redirect_output(char * fileName) {
   //going from file into standard output?
-  int fd1 = open(fileName, O_WRONLY | O_APPEND | O_CREAT, 0611); //opens a file for storing output
+  int fd1 = open(fileName, O_WRONLY | O_TRUNC | O_CREAT, 0611); //opens a file for storing output
   // if file doesn't exist, make one? Or maybe that should be in main
   int FILENO = 1; //stores standard output
   int backup_stdout = dup(FILENO); //also stores standard output
@@ -42,7 +42,27 @@ void get_cmds(char** cmds){
     }
     //printf(line_buff);
 }
+int check_for_arr(char* arg_ary[]){
+    int i = 0;
+    while (arg_ary[i]){
+        if (strcmp(">",arg_ary[i])==0){
+            return i;
+        }
+        i++;
+    }
+    return -1;
+}
 
+int check_for_pipe(char* arg_ary[]){
+    int i = 0;
+    while (arg_ary[i]){
+        if (strcmp("|",arg_ary[i])==0){
+            return i;
+        }
+        i++;
+    }
+    return -1;
+}
 void execute_cmds(char** cmds){
     //Executes all commands in cmds array
     int i = 0;
@@ -55,27 +75,46 @@ void execute_cmds(char** cmds){
             printf("Changed directory to %s\n", arg_ary[1]);
         }
         else{
-          int pid = fork();
-          if (pid == 0){
-              redirect_output("foo.txt");
-              execvp(arg_ary[0], arg_ary);
-          }
-          else{
-              wait(NULL);
-              printf("Executed command %s\n", cmds[i]);
-              char cwd[1000];
-              if (getcwd(cwd, sizeof(cwd)) != NULL) {
-                  printf("%s", cwd);
+        int pid = fork();
+        if (pid == 0){
+            // redirect_output("foo.txt");
+            int idx = check_for_arr(arg_ary);
+            // int pidx = check_for_pipe(arg_ary);
+            // if(pidx!=-1){
+            //     redirect_output("doodoo.dat");
+            //     char *out_ary[1000];
+            //     for (int i = 0; i < pidx;i++){
+            //         out_ary[i]=arg_ary[i];
+            //     }
+            //     execvp(out_ary[0], out_ary);
+            // }
+            if(idx!=-1){
+                redirect_output(arg_ary[idx+1]);
+                char *out_ary[1000];
+                for (int i = 0; i < idx;i++){
+                    out_ary[i]=arg_ary[i];
                 }
-          }
-          i++;
-      }
+                execvp(out_ary[0], out_ary);
+            }
+            execvp(arg_ary[0],arg_ary);
+        }
+        else{
+            wait(NULL);
+            //     int pid = fork();
+            //     if (pid == 0){
+            //     redirect_output("foo.txt"); 
+            //     execvp(arg_ary[0],arg_ary);
+            //  }
+            printf("Executed command %s\n", cmds[i]);
+        }
+        i++;
     }
-}
+    }}
+
 void redirect_in(char * fileName){
   //changing the input to be a file instead of stdin
-  int fd1 = open("foo.txt", O_WRONLY);
-  int FILENO = stdin;
+  int fd1 = open(fileName, O_WRONLY);
+  int FILENO = 0;
   int backup_stdout = dup( FILENO ); // save stdin for later
   dup2(fd1, FILENO);
   fflush(stdout);
@@ -85,6 +124,10 @@ void redirect_in(char * fileName){
 
 int main(int argc, char *argv[]) {
     char **cmds = (char **) malloc(sizeof(char*)*1000);
+    get_cmds(cmds);
+    // char *home = getenv("HOME");
+    // chdir(home);
+    execute_cmds(cmds);
     while (1) {
       get_cmds(cmds);
       // char *home = getenv("HOME");
