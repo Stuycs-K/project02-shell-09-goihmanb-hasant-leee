@@ -7,12 +7,6 @@
 #include <errno.h>
 
 
-int errorMessage() {
-    printf("errno %d\n", errno);
-    printf("%s\n", strerror(errno));
-    return 1;
-}
-
 void parse_args(char* line, char ** arg_ary){
     //Parses single command in-memory
     int i = 0;
