@@ -25,8 +25,17 @@ void redirect_output(char * fileName) {
 void get_cmds(char** cmds){
     //Parses all commands in-memory broken by semicolon using strsep
     char line_buff[1000];
-    printf("$ ");
+    char path[500];
+    getcwd(path, sizeof(path));
+    if (strncmp(path, getenv("HOME"), strlen(getenv("HOME"))) == 0) {
+      printf("~%s$", path+strlen(getenv("HOME")));
+    }
+    else {
+      printf("%s$", path);
+    }
+
     if (fgets(line_buff, sizeof(line_buff), stdin) == NULL) {
+      printf("\n");
       exit(1);
     }
     line_buff[strcspn(line_buff, "\n")] = 0; //Removes newline breaks code
@@ -70,9 +79,15 @@ void execute_cmds(char** cmds){
         char *arg_ary[1000];
         parse_args(cmds[i], arg_ary);
         if (strcmp(arg_ary[0], "cd") == 0){
+          if (arg_ary[1] == NULL) {
+            chdir(getenv("HOME"));
+            i++;
+          }
+          else {
             chdir(arg_ary[1]);
             i++;
-            printf("Changed directory to %s\n", arg_ary[1]);
+          }
+
         }
         else{
         int pid = fork();
@@ -102,7 +117,7 @@ void execute_cmds(char** cmds){
             wait(NULL);
             //     int pid = fork();
             //     if (pid == 0){
-            //     redirect_output("foo.txt"); 
+            //     redirect_output("foo.txt");
             //     execvp(arg_ary[0],arg_ary);
             //  }
             printf("Executed command %s\n", cmds[i]);
