@@ -89,6 +89,10 @@ void execute_cmds(char** cmds){
           }
 
         }
+        else if (strcmp(arg_ary[0], "exit") == 0){
+          printf("\n");
+          exit(1);
+        }
         else{
         int pid = fork();
         if (pid == 0){
