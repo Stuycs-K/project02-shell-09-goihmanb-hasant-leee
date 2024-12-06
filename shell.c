@@ -70,7 +70,7 @@ void redirect_in(char * fileName){
   //changing the input to be a file instead of stdin
   int fd1 = open("foo.txt", O_WRONLY);
   int FILENO = stdin;
-  int backup_stdout = dup( FILENO ) // save stdin for later
+  int backup_stdout = dup( FILENO ); // save stdin for later
   dup2(fd1, FILENO);
   fflush(stdout);
   dup2(backup_stdout, FILENO);
