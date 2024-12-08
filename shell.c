@@ -63,7 +63,7 @@ void execute_cmds(char** cmds){
             exit(0);
         }
         else if (check_for_pipe(arg_ary) != -1){
-            printf("Executing pipe command %s\n", cmds[i]);
+            // printf("Executing pipe command %s\n", cmds[i]);
             int pipe_idx = check_for_pipe(arg_ary);
             char cmd1[10000] = "";
             char cmd2[10000] = "";
@@ -82,7 +82,7 @@ void execute_cmds(char** cmds){
             i++;
         }
         else{
-        printf("Executing command %s\n", cmds[i]);
+        // printf("Executing command %s\n", cmds[i]);
         int pid = fork();
         if (pid == 0){
             int idx = check_for_redir(arg_ary);
@@ -109,7 +109,7 @@ void execute_cmds(char** cmds){
         }
         else{
             wait(NULL);
-            printf("Executed command %s\n", cmds[i]);
+            // printf("Executed command %s\n", cmds[i]);
         }
         i++;
     }

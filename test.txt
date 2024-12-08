@@ -1,0 +1,10 @@
+ls
+pwd
+cd ..
+ls
+ls > test.txt
+ls | wc
+cat < test.txt
+cat < test.txt | wc
+cat < test.txt | wc > out.txt
+ls | wc;cat < test.txt | wc > out.txt
