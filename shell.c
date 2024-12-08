@@ -51,10 +51,21 @@ void get_cmds(char** cmds){
     }
     //printf(line_buff);
 }
-int check_for_arr(char* arg_ary[]){
+int check_for_redir(char* arg_ary[]){
     int i = 0;
     while (arg_ary[i]){
         if (strcmp(">",arg_ary[i])==0){
+            return i;
+        }
+        i++;
+    }
+    return -1;
+}
+
+int check_for_redir_in(char* arg_ary[]){
+    int i = 0;
+    while (arg_ary[i]){
+        if (strcmp("<",arg_ary[i])==0){
             return i;
         }
         i++;
@@ -93,6 +104,17 @@ int check_for_pipe(char* arg_ary[]){
         i++;
     }
     return -1;
+}
+void redirect_in(char * fileName){
+  //changing the input to be a file instead of stdin
+  int fd1 = open(fileName, O_RDONLY);
+  int FILENO = 0;
+  int backup_stdout = dup( FILENO ); // save stdin for later
+  dup2(fd1, FILENO);
+  close(fd1);
+//   fflush(stdin);
+//   dup2(backup_stdout, FILENO);
+
 }
 
 void execute_cmds(char** cmds){
@@ -138,17 +160,28 @@ void execute_cmds(char** cmds){
             i++;
         }
         else{
-            printf("Executing command %s\n", cmds[i]);
+        printf("Executing command %s\n", cmds[i]);
         int pid = fork();
         if (pid == 0){
-            int idx = check_for_arr(arg_ary);
+            int idx = check_for_redir(arg_ary);
             if(idx!=-1){
                 redirect_output(arg_ary[idx+1]);
                 char *out_ary[1000];
                 for (int i = 0; i < idx;i++){
                     out_ary[i]=arg_ary[i];
                 }
+                out_ary[idx]=NULL;
                 execvp(out_ary[0], out_ary);
+            }
+            int idx2 = check_for_redir_in(arg_ary);
+            if(idx2!=-1){
+                redirect_in(arg_ary[idx2+1]);
+                char *in_ary[1000];
+                for (int i = 0; i < idx2;i++){
+                    in_ary[i]=arg_ary[i];
+                }
+                in_ary[idx2]=NULL;
+                execvp(in_ary[0], in_ary);
             }
             execvp(arg_ary[0],arg_ary);
         }
@@ -165,16 +198,6 @@ void execute_cmds(char** cmds){
     }
     }}
 
-void redirect_in(char * fileName){
-  //changing the input to be a file instead of stdin
-  int fd1 = open(fileName, O_WRONLY);
-  int FILENO = 0;
-  int backup_stdout = dup( FILENO ); // save stdin for later
-  dup2(fd1, FILENO);
-  fflush(stdout);
-  dup2(backup_stdout, FILENO);
-
-}
 
 
 
