@@ -17,7 +17,7 @@ The Porpoises
 ## Shell features tried but failed
 - N/A
 ## bugs
-- N/A
+- Not sure if this is a bug or an issue, but after running the shell using a file as input, once all the commands execute normally, it prints or displays what seems to be a concatenated print statement of all the prompts that would have been shown if it had been a user instead of a text.
 ## headers
 - int main(int argc, char *argv[])
 - void parse_args(char* line, char ** arg_ary)
