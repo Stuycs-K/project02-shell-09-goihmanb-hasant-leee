@@ -111,11 +111,6 @@ void execute_cmds(char** cmds){
         }
         else{
             wait(NULL);
-            //     int pid = fork();
-            //     if (pid == 0){
-            //     redirect_output("foo.txt");
-            //     execvp(arg_ary[0],arg_ary);
-            //  }
             printf("Executed command %s\n", cmds[i]);
         }
         i++;
@@ -127,8 +122,6 @@ void execute_cmds(char** cmds){
 
 int main(int argc, char *argv[]) {
     char **cmds = (char **) malloc(sizeof(char*)*1000);
-    // get_cmds(cmds);
-    // execute_cmds(cmds);
     while (1) {
       get_cmds(cmds);
       execute_cmds(cmds);
