@@ -13,8 +13,8 @@
 
 void get_cmds(char** cmds){
     //Parses all commands in-memory broken by semicolon using strsep
-    char line_buff[1000];
-    char path[500];
+    char line_buff[10000];
+    char path[5000];
     getcwd(path, sizeof(path));
     if (strncmp(path, getenv("HOME"), strlen(getenv("HOME"))) == 0) {
       printf("~%s$", path+strlen(getenv("HOME")));
@@ -38,6 +38,7 @@ void get_cmds(char** cmds){
         token = strsep( &curr, ";" );
         i++;
     }
+    cmds[i] = NULL;
 }
 
 
@@ -70,16 +71,13 @@ void execute_cmds(char** cmds){
             for (int j = 0; j < pipe_idx; j++) {
                 strcat(cmd1, arg_ary[j]);
                 strcat(cmd1, " ");
-            }
-            
+            } 
             int iannoyedme = pipe_idx + 1; //BRUHHHHHHHH I WAS INCREMENTING THIS I not the counter ):::::::
             while(arg_ary[iannoyedme]) {
                 strcat(cmd2, arg_ary[iannoyedme]);
                 strcat(cmd2, " ");
                 iannoyedme++;
             }
-
-            
             run_cmd_pipe(cmd1, cmd2);
             i++;
         }

@@ -52,26 +52,28 @@ int check_for_redir_in(char* arg_ary[]){
 }
 
 void run_cmd_pipe(char * cmd1, char * cmd2){
-    FILE *fp;
+    FILE *fp1, *fp2;
     char buffer[10000];
 
-    fp = popen(cmd1, "r");
-    if (fp == NULL) {
+    fp1 = popen(cmd1, "r");
+    if (fp1 == NULL) {
         perror("popen failed");
+        return;
     }
 
-    fgets(buffer, sizeof(buffer), fp);
-    pclose(fp);
-
-    fp = popen(cmd2, "w");
-    if (fp == NULL) {
+    fp2 = popen(cmd2, "w");
+    if (fp2 == NULL) {
         perror("popen failed");
+        pclose(fp1);
+        return;
     }
 
-    fprintf(fp, buffer);
+    while (fgets(buffer, sizeof(buffer), fp1) != NULL) {
+        fprintf(fp2, "%s", buffer);
+    }
 
-    pclose(fp);
-
+    pclose(fp1);
+    pclose(fp2);
 }
 
 int check_for_pipe(char* arg_ary[]){
