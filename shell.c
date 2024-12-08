@@ -36,7 +36,7 @@ void get_cmds(char** cmds){
 
     if (fgets(line_buff, sizeof(line_buff), stdin) == NULL) {
       printf("\n");
-      exit(1);
+      exit(0);
     }
     line_buff[strcspn(line_buff, "\n")] = 0; //Removes newline breaks code
     char *curr = line_buff;
@@ -135,7 +135,7 @@ void execute_cmds(char** cmds){
 
         }
         else if (strcmp(arg_ary[0],"exit")==0){
-            exit(1);
+            exit(0);
         }
         else if (check_for_pipe(arg_ary) != -1){
             printf("Executing pipe command %s\n", cmds[i]);
