@@ -61,17 +61,40 @@ int check_for_arr(char* arg_ary[]){
     }
     return -1;
 }
+void run_cmd_pipe(char * cmd1, char * cmd2){
+    FILE *fp;
+    char buffer[10000];
+
+    fp = popen(cmd1, "r");
+    if (fp == NULL) {
+        perror("popen failed");
+    }
+
+    fgets(buffer, sizeof(buffer), fp);
+    pclose(fp);
+
+    fp = popen(cmd2, "w");
+    if (fp == NULL) {
+        perror("popen failed");
+    }
+
+    fprintf(fp, buffer);
+
+    pclose(fp);
+
+}
 
 int check_for_pipe(char* arg_ary[]){
     int i = 0;
     while (arg_ary[i]){
-        if (strcmp("|",arg_ary[i])==0){
+        if (strcmp("|", arg_ary[i]) == 0){
             return i;
         }
         i++;
     }
     return -1;
 }
+
 void execute_cmds(char** cmds){
     //Executes all commands in cmds array
     int i = 0;
@@ -89,20 +112,36 @@ void execute_cmds(char** cmds){
           }
 
         }
+        else if (strcmp(arg_ary[0],"exit")==0){
+            exit(1);
+        }
+        else if (check_for_pipe(arg_ary) != -1){
+            printf("Executing pipe command %s\n", cmds[i]);
+            int pipe_idx = check_for_pipe(arg_ary);
+            char cmd1[10000] = "";
+            char cmd2[10000] = "";
+            
+            for (int j = 0; j < pipe_idx; j++) {
+                strcat(cmd1, arg_ary[j]);
+                strcat(cmd1, " ");
+            }
+            
+            int iannoyedme = pipe_idx + 1; //BRUHHHHHHHH I WAS INCREMENTING THIS I not the counter ):::::::
+            while(arg_ary[iannoyedme]) {
+                strcat(cmd2, arg_ary[iannoyedme]);
+                strcat(cmd2, " ");
+                iannoyedme++;
+            }
+
+            
+            run_cmd_pipe(cmd1, cmd2);
+            i++;
+        }
         else{
+            printf("Executing command %s\n", cmds[i]);
         int pid = fork();
         if (pid == 0){
-            // redirect_output("foo.txt");
             int idx = check_for_arr(arg_ary);
-            // int pidx = check_for_pipe(arg_ary);
-            // if(pidx!=-1){
-            //     redirect_output("doodoo.dat");
-            //     char *out_ary[1000];
-            //     for (int i = 0; i < pidx;i++){
-            //         out_ary[i]=arg_ary[i];
-            //     }
-            //     execvp(out_ary[0], out_ary);
-            // }
             if(idx!=-1){
                 redirect_output(arg_ary[idx+1]);
                 char *out_ary[1000];
@@ -136,6 +175,8 @@ void redirect_in(char * fileName){
   dup2(backup_stdout, FILENO);
 
 }
+
+
 
 int main(int argc, char *argv[]) {
     char **cmds = (char **) malloc(sizeof(char*)*1000);
