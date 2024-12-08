@@ -1,7 +1,0 @@
-README.md
-makefile
-shell
-shell.c
-shell.o
-test.c
-text.txt
